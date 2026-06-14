@@ -1,0 +1,29 @@
+{
+  "name": "fan-perks-skills",
+  "version": "1.0.0",
+  "description": "Fan Perks TKCPS Open API skills for rebate agents.",
+  "author": {
+    "name": "fthingapp",
+    "url": "https://github.com/fthingapp"
+  },
+  "homepage": "https://github.com/fthingapp/fan-perks-skills",
+  "repository": "https://github.com/fthingapp/fan-perks-skills",
+  "license": "MIT-0",
+  "keywords": ["fan-perks", "tkcps", "openapi", "mcp", "rebate"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Fan Perks Skills",
+    "shortDescription": "Call Fan Perks deal, order, account, and withdraw APIs.",
+    "longDescription": "Install Fan Perks agent skills for TKCPS Open API workflows, including product deal search, rebate link conversion, member order lookup, account summaries, withdraw configuration, withdraw applications, and withdraw records.",
+    "developerName": "fthingapp",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/fthingapp/fan-perks-skills",
+    "defaultPrompt": [
+      "Use Fan Perks to search deals and convert rebate links.",
+      "Check my Fan Perks orders and commission summary.",
+      "Review withdraw limits before submitting an application."
+    ],
+    "brandColor": "#FF6B35"
+  }
+}

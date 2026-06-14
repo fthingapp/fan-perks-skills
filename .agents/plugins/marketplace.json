@@ -1,0 +1,20 @@
+{
+  "name": "fan-perks-skills",
+  "interface": {
+    "displayName": "Fan Perks Skills"
+  },
+  "plugins": [
+    {
+      "name": "fan-perks-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/fan-perks-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

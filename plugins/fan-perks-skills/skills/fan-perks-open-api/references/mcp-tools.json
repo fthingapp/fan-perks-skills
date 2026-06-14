@@ -1,0 +1,174 @@
+{
+  "name": "fan-perks-tkcps",
+  "version": "1.0.0",
+  "base_url": "/open/tkcps/v1",
+  "auth": {
+    "type": "bearer",
+    "header": "Authorization",
+    "alternative_header": "X-API-Key",
+    "env": "FAN_PERKS_API_KEY"
+  },
+  "response": {
+    "success": {
+      "code": 1,
+      "msg": "SUCCESS",
+      "data": {}
+    },
+    "failure": {
+      "code": 0,
+      "msg": "Human readable error",
+      "data": {
+        "error_code": "INVALID_API_KEY"
+      }
+    },
+    "notes": [
+      "Business errors are identified by code=0 and data.error_code.",
+      "RATE_LIMITED may return HTTP 429; most other business errors return HTTP 200."
+    ]
+  },
+  "errors": [
+    { "code": "OPEN_API_DISABLED", "http": 200, "description": "Platform Open API switch is disabled." },
+    { "code": "ENDPOINT_DISABLED", "http": 200, "description": "The requested endpoint is disabled." },
+    { "code": "API_KEY_REQUIRED", "http": 200, "description": "Authorization Bearer or X-API-Key is missing." },
+    { "code": "INVALID_API_KEY", "http": 200, "description": "The API key is invalid, disabled, or reset." },
+    { "code": "SCOPE_DENIED", "http": 200, "description": "The API key does not have the required scope." },
+    { "code": "WITHDRAW_APPLY_DISABLED", "http": 200, "description": "Withdraw application is not enabled for this key." },
+    { "code": "RATE_LIMITED", "http": 429, "description": "Daily endpoint quota has been reached." },
+    { "code": "SERVER_ERROR", "http": 200, "description": "Server-side error." }
+  ],
+  "tools": [
+    {
+      "name": "search_deals",
+      "method": "GET",
+      "path": "/goods/search",
+      "scope": "goods:read",
+      "quota": "300/day",
+      "description": "Search available product deals by keyword or product URL.",
+      "input_schema": {
+        "type": "object",
+        "required": ["keyword"],
+        "properties": {
+          "keyword": { "type": "string", "description": "Product URL or search keyword." }
+        }
+      }
+    },
+    {
+      "name": "convert_product_link",
+      "method": "POST",
+      "path": "/goods/convert",
+      "scope": "goods:convert",
+      "quota": "100/day",
+      "description": "Convert a product URL or keyword into current-member commission links.",
+      "input_schema": {
+        "type": "object",
+        "required": ["keyword"],
+        "properties": {
+          "keyword": { "type": "string", "description": "Product URL or keyword to convert." }
+        }
+      }
+    },
+    {
+      "name": "get_orders",
+      "method": "GET",
+      "path": "/orders",
+      "scope": "order:read",
+      "quota": "100/day",
+      "description": "List authenticated member CPS orders.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer", "default": 1 },
+          "limit": { "type": "integer", "default": 10, "maximum": 50 },
+          "keyword": { "type": "string" },
+          "tk_status": { "type": "integer" },
+          "commission_settled": { "type": "integer" },
+          "commission_status": { "type": "integer" },
+          "start_time": { "type": "string", "description": "Y-m-d" },
+          "end_time": { "type": "string", "description": "Y-m-d" }
+        }
+      }
+    },
+    {
+      "name": "get_order_detail",
+      "method": "GET",
+      "path": "/orders/{id}",
+      "scope": "order:read",
+      "quota": "100/day",
+      "description": "Get one authenticated member CPS order detail. Use an id returned by get_orders.",
+      "input_schema": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "integer" }
+        }
+      }
+    },
+    {
+      "name": "get_account_summary",
+      "method": "GET",
+      "path": "/account/summary",
+      "scope": "account:read",
+      "quota": "100/day",
+      "description": "Get commission account, order statistics, and member level summary.",
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_withdraw_config",
+      "method": "GET",
+      "path": "/withdraw/config",
+      "scope": "withdraw:read",
+      "quota": "100/day",
+      "description": "Get withdraw configuration, balance, methods, and Open API withdraw limits.",
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_withdraw_records",
+      "method": "GET",
+      "path": "/withdraw/list",
+      "scope": "withdraw:read",
+      "quota": "100/day",
+      "description": "List authenticated member withdraw records.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer", "default": 1 },
+          "limit": { "type": "integer", "default": 10, "maximum": 50 },
+          "status": { "type": "integer", "description": "0 pending audit, 1 pending transfer, 2 rejected, 3 paid, 4 canceled." },
+          "withdraw_type": { "type": "string", "description": "Withdraw method, for example wechat." }
+        }
+      }
+    },
+    {
+      "name": "apply_withdraw",
+      "method": "POST",
+      "path": "/withdraw/apply",
+      "scope": "withdraw:apply",
+      "quota": "3/day",
+      "description": "Submit a withdraw application only. Requires user confirmation and Idempotency-Key.",
+      "headers": {
+        "Idempotency-Key": {
+          "required": true,
+          "description": "Unique key for each intended withdraw application."
+        }
+      },
+      "preconditions": [
+        "Call get_withdraw_config first.",
+        "Confirm amount, balance, fee, minimum amount, single limit, daily count, and daily amount.",
+        "Explain that this API submits an application and does not approve or transfer funds."
+      ],
+      "input_schema": {
+        "type": "object",
+        "required": ["amount"],
+        "properties": {
+          "amount": { "type": "string", "description": "Withdraw amount in yuan, for example 10.00." }
+        }
+      }
+    }
+  ]
+}
