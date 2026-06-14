@@ -15,11 +15,11 @@ import sys
 import time
 from urllib import error, parse, request
 
-BASE_URL = "https://perks.fthing.cn"
+API_BASE_URL = "https://perks.fthing.cn/api"
 
 
 def call(api_key, method, path, data=None, idem=None):
-    url = BASE_URL.rstrip("/") + "/open/tkcps/v1" + path
+    url = API_BASE_URL.rstrip("/") + "/open/tkcps/v1" + path
     body = None
     headers = {"Authorization": f"Bearer {api_key}"}
     clean_data = {k: v for k, v in (data or {}).items() if v not in ("", None)}

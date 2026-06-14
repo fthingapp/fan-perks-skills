@@ -7,7 +7,7 @@ description: Use when an AI agent needs to call Fan Perks TKCPS open APIs for pr
 
 Use this skill to operate the Fan Perks TKCPS Open API on behalf of the member bound to the API key.
 
-Fixed site: `https://perks.fthing.cn/`.
+Fixed API base: `https://perks.fthing.cn/api`.
 
 ## Trigger Scenarios
 
@@ -57,14 +57,14 @@ Prefer these MCP-style operations:
 
 | Tool | Method | Path | Scope |
 | --- | --- | --- | --- |
-| `search_deals` | GET | `/open/tkcps/v1/goods/search` | `goods:read` |
-| `convert_product_link` | POST | `/open/tkcps/v1/goods/convert` | `goods:convert` |
-| `get_orders` | GET | `/open/tkcps/v1/orders` | `order:read` |
-| `get_order_detail` | GET | `/open/tkcps/v1/orders/{id}` | `order:read` |
-| `get_account_summary` | GET | `/open/tkcps/v1/account/summary` | `account:read` |
-| `get_withdraw_config` | GET | `/open/tkcps/v1/withdraw/config` | `withdraw:read` |
-| `get_withdraw_records` | GET | `/open/tkcps/v1/withdraw/list` | `withdraw:read` |
-| `apply_withdraw` | POST | `/open/tkcps/v1/withdraw/apply` | `withdraw:apply` |
+| `search_deals` | GET | `/api/open/tkcps/v1/goods/search` | `goods:read` |
+| `convert_product_link` | POST | `/api/open/tkcps/v1/goods/convert` | `goods:convert` |
+| `get_orders` | GET | `/api/open/tkcps/v1/orders` | `order:read` |
+| `get_order_detail` | GET | `/api/open/tkcps/v1/orders/{id}` | `order:read` |
+| `get_account_summary` | GET | `/api/open/tkcps/v1/account/summary` | `account:read` |
+| `get_withdraw_config` | GET | `/api/open/tkcps/v1/withdraw/config` | `withdraw:read` |
+| `get_withdraw_records` | GET | `/api/open/tkcps/v1/withdraw/list` | `withdraw:read` |
+| `apply_withdraw` | POST | `/api/open/tkcps/v1/withdraw/apply` | `withdraw:apply` |
 
 The OpenAPI documentation also exposes `GET /me` and `GET /goods/detail`; use them when the user needs key validation or a specific product detail.
 
@@ -119,4 +119,4 @@ Except `RATE_LIMITED`, which may return HTTP 429, business errors usually return
 
 - Read `references/mcp-tools.json` when building OpenClaw, Hermes, or MCP tool adapters.
 - Read `references/openapi-summary.md` when you need endpoint details, scopes, idempotency rules, and examples.
-- Use `scripts/fan_perks_client.py` for quick manual calls from a shell. It uses only the Python standard library, calls `https://perks.fthing.cn/`, and reads `FAN_PERKS_API_KEY`.
+- Use `scripts/fan_perks_client.py` for quick manual calls from a shell. It uses only the Python standard library, calls `https://perks.fthing.cn/api`, and reads `FAN_PERKS_API_KEY`.

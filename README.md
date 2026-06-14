@@ -70,7 +70,7 @@ clawhub install fan-perks-open-api
 
 ## 安装后配置
 
-The Fan Perks site is fixed at `https://perks.fthing.cn/`. Set the member API key in your shell, agent secret store, or server-side vault:
+The Fan Perks API base is fixed at `https://perks.fthing.cn/api`. Set the member API key in your shell, agent secret store, or server-side vault:
 
 ```bash
 export FAN_PERKS_API_KEY="fp_xxx"
@@ -113,8 +113,8 @@ python3 skills/fan-perks-open-api/scripts/fan_perks_client.py --help
 The Fan Perks website remains the source of truth for complete API documentation:
 
 - OpenAPI page: `/open/tkcps`
-- OpenAPI JSON: `/open/tkcps/v1/openapi.json`
-- MCP tools JSON: `/open/tkcps/v1/mcp.json`
+- OpenAPI JSON: `https://perks.fthing.cn/api/open/tkcps/v1/openapi.json`
+- MCP tools JSON: `https://perks.fthing.cn/api/open/tkcps/v1/mcp.json`
 
 This skill is a lightweight operating guide for agents. It does not replace the OpenAPI documentation and does not include private credentials.
 
