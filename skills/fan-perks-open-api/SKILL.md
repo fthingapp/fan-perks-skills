@@ -7,6 +7,8 @@ description: Use when an AI agent needs to call Fan Perks TKCPS open APIs for pr
 
 Use this skill to operate the Fan Perks TKCPS Open API on behalf of the member bound to the API key.
 
+Fixed site: `https://perks.fthing.cn/`.
+
 ## Trigger Scenarios
 
 - The user wants to search product deals, coupons, or CPS commission opportunities.
@@ -17,7 +19,6 @@ Use this skill to operate the Fan Perks TKCPS Open API on behalf of the member b
 
 ## Required Inputs
 
-- `base_url`: Fan Perks site origin, for example `https://fanperks.example.com`.
 - `api_key`: member API key generated in the Fan Perks member API console.
 
 Optional inputs depend on the operation:
@@ -118,4 +119,4 @@ Except `RATE_LIMITED`, which may return HTTP 429, business errors usually return
 
 - Read `references/mcp-tools.json` when building OpenClaw, Hermes, or MCP tool adapters.
 - Read `references/openapi-summary.md` when you need endpoint details, scopes, idempotency rules, and examples.
-- Use `scripts/fan_perks_client.py` for quick manual calls from a shell. It uses only the Python standard library and reads `FAN_PERKS_BASE_URL` / `FAN_PERKS_API_KEY`.
+- Use `scripts/fan_perks_client.py` for quick manual calls from a shell. It uses only the Python standard library, calls `https://perks.fthing.cn/`, and reads `FAN_PERKS_API_KEY`.

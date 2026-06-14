@@ -5,7 +5,6 @@ This helper intentionally uses only Python standard-library modules so it can be
 copied into agent sandboxes without installing third-party dependencies.
 
 Environment:
-  FAN_PERKS_BASE_URL  Fan Perks site origin, for example https://example.com
   FAN_PERKS_API_KEY   Member API key generated in the API console
 """
 
@@ -16,9 +15,11 @@ import sys
 import time
 from urllib import error, parse, request
 
+BASE_URL = "https://perks.fthing.cn"
 
-def call(base_url, api_key, method, path, data=None, idem=None):
-    url = base_url.rstrip("/") + "/open/tkcps/v1" + path
+
+def call(api_key, method, path, data=None, idem=None):
+    url = BASE_URL.rstrip("/") + "/open/tkcps/v1" + path
     body = None
     headers = {"Authorization": f"Bearer {api_key}"}
     clean_data = {k: v for k, v in (data or {}).items() if v not in ("", None)}
@@ -53,7 +54,6 @@ def main():
         "get_withdraw_records",
         "apply_withdraw",
     ])
-    parser.add_argument("--base-url", default=os.getenv("FAN_PERKS_BASE_URL", ""), help="Fan Perks site origin or FAN_PERKS_BASE_URL")
     parser.add_argument("--api-key", default=os.getenv("FAN_PERKS_API_KEY", ""), help="Member API key or FAN_PERKS_API_KEY")
     parser.add_argument("--keyword", default="", help="Product URL or search keyword")
     parser.add_argument("--id", type=int, default=0, help="Order ID returned by get_orders")
@@ -70,8 +70,8 @@ def main():
     parser.add_argument("--idempotency-key", default="", help="Required for apply_withdraw; generated if omitted")
     args = parser.parse_args()
 
-    if not args.base_url or not args.api_key:
-        parser.error("--base-url/FAN_PERKS_BASE_URL and --api-key/FAN_PERKS_API_KEY are required")
+    if not args.api_key:
+        parser.error("--api-key/FAN_PERKS_API_KEY is required")
 
     if args.tool in ("search_deals", "convert_product_link"):
         require_value(parser, args.keyword, "--keyword", args.tool)
@@ -108,7 +108,7 @@ def main():
     }
     method, path, data, idem = mapping[args.tool]
     try:
-        result = call(args.base_url, args.api_key, method, path, data, idem)
+        result = call(args.api_key, method, path, data, idem)
     except error.HTTPError as exc:
         payload = exc.read().decode()
         try:

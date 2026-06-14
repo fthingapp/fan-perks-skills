@@ -12,7 +12,7 @@ Current skill:
 
 - 已安装 Node.js 环境。
 - 能够运行 `npx` 命令；如果你的 Agent 环境使用 Bun，也可以用 `bunx` 执行同类命令。
-- 已在 Fan Perks 会员中心生成 API Key，并准备好站点地址。
+- 已在 Fan Perks 会员中心生成 API Key。
 
 ## 安装
 
@@ -70,10 +70,9 @@ clawhub install fan-perks-open-api
 
 ## 安装后配置
 
-Set the Fan Perks site origin and member API key in your shell, agent secret store, or server-side vault:
+The Fan Perks site is fixed at `https://perks.fthing.cn/`. Set the member API key in your shell, agent secret store, or server-side vault:
 
 ```bash
-export FAN_PERKS_BASE_URL="https://your-fan-perks-site.example.com"
 export FAN_PERKS_API_KEY="fp_xxx"
 ```
 

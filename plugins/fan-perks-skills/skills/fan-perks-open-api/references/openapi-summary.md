@@ -1,5 +1,7 @@
 # Fan Perks TKCPS OpenAPI Summary
 
+Site: `https://perks.fthing.cn/`
+
 Base path: `/open/tkcps/v1`
 
 Authentication:
@@ -118,20 +120,20 @@ Validate key:
 
 ```bash
 curl -H "Authorization: Bearer $FAN_PERKS_API_KEY" \
-  "$FAN_PERKS_BASE_URL/open/tkcps/v1/me"
+  "https://perks.fthing.cn/open/tkcps/v1/me"
 ```
 
 Search deals:
 
 ```bash
 curl -H "Authorization: Bearer $FAN_PERKS_API_KEY" \
-  "$FAN_PERKS_BASE_URL/open/tkcps/v1/goods/search?keyword=%E5%95%86%E5%93%81%E9%93%BE%E6%8E%A5"
+  "https://perks.fthing.cn/open/tkcps/v1/goods/search?keyword=%E5%95%86%E5%93%81%E9%93%BE%E6%8E%A5"
 ```
 
 Convert a product link:
 
 ```bash
-curl -X POST "$FAN_PERKS_BASE_URL/open/tkcps/v1/goods/convert" \
+curl -X POST "https://perks.fthing.cn/open/tkcps/v1/goods/convert" \
   -H "Authorization: Bearer $FAN_PERKS_API_KEY" \
   -d "keyword=https://example.com/item"
 ```
@@ -139,7 +141,7 @@ curl -X POST "$FAN_PERKS_BASE_URL/open/tkcps/v1/goods/convert" \
 Apply withdraw:
 
 ```bash
-curl -X POST "$FAN_PERKS_BASE_URL/open/tkcps/v1/withdraw/apply" \
+curl -X POST "https://perks.fthing.cn/open/tkcps/v1/withdraw/apply" \
   -H "Authorization: Bearer $FAN_PERKS_API_KEY" \
   -H "Idempotency-Key: withdraw-$(date +%s)" \
   -d "amount=10.00"

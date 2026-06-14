@@ -1,6 +1,7 @@
 {
   "name": "fan-perks-tkcps",
   "version": "1.0.0",
+  "site_url": "https://perks.fthing.cn",
   "base_url": "/open/tkcps/v1",
   "auth": {
     "type": "bearer",
