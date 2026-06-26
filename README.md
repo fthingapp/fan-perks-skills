@@ -120,4 +120,4 @@ This skill is a lightweight operating guide for agents. It does not replace the 
 
 ## Safety Boundary
 
-The Open API only operates on the member account bound to the API key. Withdraw support is intentionally narrow: the API can submit a withdraw application, but it cannot approve, transfer, cancel, repair, or edit admin notes. A withdraw application must be confirmed by the user first and must include a unique `Idempotency-Key`.
+The Open API only operates on the member account bound to the API key. Withdraw support is intentionally narrow: the API can submit a withdraw application, but it cannot approve, transfer, cancel, repair, or edit admin notes. A withdraw application must be confirmed by the user first, and one member can have only one in-progress withdraw application at a time.

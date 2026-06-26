@@ -12,13 +12,12 @@ import argparse
 import json
 import os
 import sys
-import time
 from urllib import error, parse, request
 
 API_BASE_URL = "https://perks.fthing.cn/api"
 
 
-def call(api_key, method, path, data=None, idem=None):
+def call(api_key, method, path, data=None):
     url = API_BASE_URL.rstrip("/") + "/open/tkcps/v1" + path
     body = None
     headers = {"Authorization": f"Bearer {api_key}"}
@@ -28,8 +27,6 @@ def call(api_key, method, path, data=None, idem=None):
     if method == "POST":
         body = parse.urlencode(clean_data).encode()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-    if idem:
-        headers["Idempotency-Key"] = idem
     req = request.Request(url, data=body, headers=headers, method=method)
     with request.urlopen(req, timeout=30) as resp:
         return json.loads(resp.read().decode())
@@ -58,6 +55,7 @@ def main():
     parser.add_argument("--keyword", default="", help="Product URL or search keyword")
     parser.add_argument("--id", type=int, default=0, help="Order ID returned by get_orders")
     parser.add_argument("--amount", default="", help="Withdraw amount, for example 10.00")
+    parser.add_argument("--withdraw-all", action="store_true", help="Apply to withdraw all currently withdrawable commission")
     parser.add_argument("--page", type=int, default=1)
     parser.add_argument("--limit", type=int, default=10)
     parser.add_argument("--status", default="", help="Withdraw status filter")
@@ -67,7 +65,6 @@ def main():
     parser.add_argument("--commission-status", default="", help="Order commission status filter")
     parser.add_argument("--start-time", default="", help="Order paid start date, Y-m-d")
     parser.add_argument("--end-time", default="", help="Order paid end date, Y-m-d")
-    parser.add_argument("--idempotency-key", default="", help="Required for apply_withdraw; generated if omitted")
     args = parser.parse_args()
 
     if not args.api_key:
@@ -77,12 +74,12 @@ def main():
         require_value(parser, args.keyword, "--keyword", args.tool)
     if args.tool == "get_order_detail":
         require_value(parser, args.id, "--id", args.tool)
-    if args.tool == "apply_withdraw":
+    if args.tool == "apply_withdraw" and not args.withdraw_all:
         require_value(parser, args.amount, "--amount", args.tool)
 
     mapping = {
-        "search_deals": ("GET", "/goods/search", {"keyword": args.keyword}, None),
-        "convert_product_link": ("POST", "/goods/convert", {"keyword": args.keyword}, None),
+        "search_deals": ("GET", "/goods/search", {"keyword": args.keyword}),
+        "convert_product_link": ("POST", "/goods/convert", {"keyword": args.keyword}),
         "get_orders": ("GET", "/orders", {
             "page": args.page,
             "limit": args.limit,
@@ -92,23 +89,24 @@ def main():
             "commission_status": args.commission_status,
             "start_time": args.start_time,
             "end_time": args.end_time,
-        }, None),
-        "get_order_detail": ("GET", f"/orders/{args.id}", {}, None),
-        "get_account_summary": ("GET", "/account/summary", {}, None),
-        "get_withdraw_config": ("GET", "/withdraw/config", {}, None),
+        }),
+        "get_order_detail": ("GET", f"/orders/{args.id}", {}),
+        "get_account_summary": ("GET", "/account/summary", {}),
+        "get_withdraw_config": ("GET", "/withdraw/config", {}),
         "get_withdraw_records": ("GET", "/withdraw/list", {
             "page": args.page,
             "limit": args.limit,
             "status": args.status,
             "withdraw_type": args.withdraw_type,
-        }, None),
+        }),
         "apply_withdraw": ("POST", "/withdraw/apply", {
             "amount": args.amount,
-        }, args.idempotency_key or f"withdraw-{int(time.time())}"),
+            "withdraw_all": 1 if args.withdraw_all else 0,
+        }),
     }
-    method, path, data, idem = mapping[args.tool]
+    method, path, data = mapping[args.tool]
     try:
-        result = call(args.api_key, method, path, data, idem)
+        result = call(args.api_key, method, path, data)
     except error.HTTPError as exc:
         payload = exc.read().decode()
         try:

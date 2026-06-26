@@ -123,7 +123,7 @@
       "path": "/withdraw/config",
       "scope": "withdraw:read",
       "quota": "100/day",
-      "description": "Get withdraw configuration, balance, methods, and Open API withdraw limits.",
+      "description": "Get withdraw configuration, balance, methods, business limits, and Open API withdraw limits.",
       "input_schema": {
         "type": "object",
         "properties": {}
@@ -152,23 +152,18 @@
       "path": "/withdraw/apply",
       "scope": "withdraw:apply",
       "quota": "3/day",
-      "description": "Submit a withdraw application only. Requires user confirmation and Idempotency-Key.",
-      "headers": {
-        "Idempotency-Key": {
-          "required": true,
-          "description": "Unique key for each intended withdraw application."
-        }
-      },
+      "description": "Submit a withdraw application only. Requires user confirmation. One member can have only one in-progress withdraw application.",
       "preconditions": [
         "Call get_withdraw_config first.",
-        "Confirm amount, balance, fee, minimum amount, single limit, daily count, and daily amount.",
+        "Confirm amount or all-withdrawable amount, balance, fee, minimum amount, business single limit, OpenAPI single limit, daily count, and daily amount.",
+        "Check withdraw records when needed; do not submit a second application while one is pending audit, pending transfer, or transferring.",
         "Explain that this API submits an application and does not approve or transfer funds."
       ],
       "input_schema": {
         "type": "object",
-        "required": ["amount"],
         "properties": {
-          "amount": { "type": "string", "description": "Withdraw amount in yuan, for example 10.00." }
+          "amount": { "type": "string", "description": "Withdraw amount in yuan, for example 10.00. Required unless withdraw_all is 1." },
+          "withdraw_all": { "type": "integer", "enum": [0, 1], "description": "Set to 1 to withdraw all currently withdrawable commission." }
         }
       }
     }
