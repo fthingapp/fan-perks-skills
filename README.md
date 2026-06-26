@@ -14,7 +14,7 @@ Fan Perks 面向 Agent 的 TKCPS Open API 技能仓库。
 
 - 已安装 Node.js 环境。
 - 能够运行 `npx` 命令；如果你的 Agent 环境使用 Bun，也可以用 `bunx` 执行同类命令。
-- 已在 Fan Perks 会员中心生成 API Key。
+- 已在 Fan Perks 会员中心生成 API Key。访问 [https://perks.fthing.cn](https://perks.fthing.cn) 登录后，在会员中心生成或复制 API Key。
 
 ## 安装
 
@@ -72,7 +72,7 @@ clawhub install fan-perks-open-api
 
 ## 安装后配置
 
-Fan Perks API base 固定为 `https://perks.fthing.cn/api`。请在 shell、Agent secret store 或服务端密钥库中设置会员 API Key：
+Fan Perks API base 固定为 `https://perks.fthing.cn/api`。API Key 可从 [https://perks.fthing.cn](https://perks.fthing.cn) 登录后的 Fan Perks 会员中心获取。请在 shell、Agent secret store 或服务端密钥库中设置会员 API Key：
 
 ```bash
 export FAN_PERKS_API_KEY="fp_xxx"

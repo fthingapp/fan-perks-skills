@@ -14,7 +14,7 @@ Current skill:
 
 - Node.js is installed.
 - The `npx` command is available; if your agent environment uses Bun, you can use `bunx` for equivalent commands.
-- You have generated an API key in the Fan Perks member center.
+- You have generated an API key in the Fan Perks member center. Visit [https://perks.fthing.cn](https://perks.fthing.cn), sign in, then generate or copy the API key from the member center.
 
 ## Installation
 
@@ -72,7 +72,7 @@ Please install the Skills from github.com/fthingapp/fan-perks-skills
 
 ## Configuration After Installation
 
-The Fan Perks API base is fixed at `https://perks.fthing.cn/api`. Set the member API key in your shell, agent secret store, or server-side vault:
+The Fan Perks API base is fixed at `https://perks.fthing.cn/api`. You can get the API key from the Fan Perks member center after signing in at [https://perks.fthing.cn](https://perks.fthing.cn). Set the member API key in your shell, agent secret store, or server-side vault:
 
 ```bash
 export FAN_PERKS_API_KEY="fp_xxx"
