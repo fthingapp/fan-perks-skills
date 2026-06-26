@@ -1,6 +1,6 @@
 ---
 name: fan-perks-open-api
-description: Use when an AI agent needs to call Fan Perks TKCPS open APIs for product deal search, product link conversion, member CPS orders, commission/account summaries, withdraw configuration, withdraw applications, or withdraw record lookup. Requires a Fan Perks member API key.
+description: Use when an AI agent needs to call Fan Perks TKCPS open APIs for product deal search, product link conversion, member CPS orders, member commission/points/level lookup, withdraw applications, or withdraw record lookup. Requires a Fan Perks member API key.
 ---
 
 # Fan Perks Open API
@@ -13,8 +13,8 @@ Fixed API base: `https://perks.fthing.cn/api`.
 
 - The user wants to search product deals, coupons, or CPS commission opportunities.
 - The user wants to convert a product URL or keyword into a Fan Perks rebate link.
-- The user asks about their CPS orders, commission status, account balance, or member level.
-- The user wants to check withdraw limits, submit a withdraw application, or list withdraw records.
+- The user asks about their CPS orders, commission status, red packet commission, points, growth value, or member level.
+- The user wants to check current commission before withdrawing, submit a withdraw application, or list withdraw records.
 - The user is configuring OpenAPI, MCP, OpenClaw, Hermes, Dify, LangChain, or a custom agent around Fan Perks.
 
 ## Required Inputs
@@ -24,7 +24,6 @@ Fixed API base: `https://perks.fthing.cn/api`.
 Optional inputs depend on the operation:
 
 - `keyword`: product URL or keyword for deal search and product conversion.
-- `id`: order ID returned by `get_orders`.
 - `amount`: withdraw amount, in yuan, for `apply_withdraw`.
 - `withdraw_all`: set to `1` to apply for all currently withdrawable commission instead of passing `amount`.
 - `page`, `limit`, `status`: list filters for orders or withdraw records.
@@ -48,7 +47,7 @@ X-API-Key: <api_key>
 - Do not ask for or store OpenID, phone number, payment account, full trade IDs, or other sensitive member data.
 - Use the minimum scope needed for the task.
 - Withdraw capability is limited to `apply_withdraw`; there is no API for audit, transfer, cancel, status repair, or admin notes.
-- Before calling `apply_withdraw`, call `get_withdraw_config`, check returned limits and balance, explain that the API only submits an application, and get explicit user confirmation for the amount or all-withdrawable amount.
+- Before calling `apply_withdraw`, call `get_current_member`, check the current withdrawable `commission`, explain that the API only submits an application, and get explicit user confirmation for the amount or all-withdrawable amount.
 - A member can have only one in-progress withdraw application. Do not submit another application while an existing one is pending audit, pending transfer, or transferring.
 
 ## Tool Mapping
@@ -59,37 +58,44 @@ Prefer these MCP-style operations:
 | --- | --- | --- | --- |
 | `search_deals` | GET | `/api/open/tkcps/v1/goods/search` | `goods:read` |
 | `convert_product_link` | POST | `/api/open/tkcps/v1/goods/convert` | `goods:convert` |
+| `get_current_member` | GET | `/api/open/tkcps/v1/me` | `account:read` |
 | `get_orders` | GET | `/api/open/tkcps/v1/orders` | `order:read` |
-| `get_order_detail` | GET | `/api/open/tkcps/v1/orders/{id}` | `order:read` |
-| `get_account_summary` | GET | `/api/open/tkcps/v1/account/summary` | `account:read` |
-| `get_withdraw_config` | GET | `/api/open/tkcps/v1/withdraw/config` | `withdraw:read` |
 | `get_withdraw_records` | GET | `/api/open/tkcps/v1/withdraw/list` | `withdraw:read` |
 | `apply_withdraw` | POST | `/api/open/tkcps/v1/withdraw/apply` | `withdraw:apply` |
 
-The OpenAPI documentation also exposes `GET /me` and `GET /goods/detail`; use them when the user needs key validation or a specific product detail.
+`GET /goods/search` accepts `keyword`, `platform`, `search_type`, `sort`, `cid`, `price`, `page`, and `page_size`. It always returns converted deal URLs.
+
+Supported `platform` values:
+
+- `tb`: 淘宝
+- `jd`: 京东
+
+Supported `search_type` values:
+
+- Common: `quanwang` 全网搜索, `all` 全站领券, `dongdongqiang` 咚咚抢, `xiaoshi` 实时销量榜, `quantian` 全天销量榜, `shishi` 实时人气榜, `videos` 视频抖货, `yongjin` 红包排行, `pengyouquan` 朋友圈火爆, `price9` 9.9元, `price19` 19.9元, `high_commission` 超高红包, `today` 今日上新, `tmall` 天猫.
+- TB only: `gold_seller` 金牌卖家, `taoqiangou` 淘抢购, `juhuasuan` 聚划算, `haitao` 天猫国际, `jiyoujia` 极有家, `tmall_market` 天猫超市.
+- JD only: `jd_self` 京东自营, `jd_good_shop` 京东好店, `jd_pingou` 京东拼购, `jd_delivery` 京东配送, `jd_haitao` 京东国际, `jingxi` 京喜, `jd_market` 京东超市.
 
 ## Tool Calling Order
 
 For shopping:
 
-1. Call `search_deals` with the user's product URL or keyword.
-2. Explain the relevant deal, coupon, and estimated commission fields.
-3. Call `convert_product_link` only when the user wants a rebate link or the workflow explicitly requires conversion.
-4. Return the converted link and mention that commission is estimated until the CPS order settles.
+1. When the user gives a product URL or keyword, call `convert_product_link` first to get the primary rebate link.
+2. Then call `search_deals` with the same input to provide recommended alternatives or similar deals.
+3. Explain the relevant converted link, coupon, and estimated member commission fields.
+4. Mention that commission is estimated until the CPS order settles.
 
 For orders:
 
 1. Call `get_orders` with the narrowest filters available.
-2. Use `get_order_detail` only for an order ID returned by `get_orders`.
-3. Do not request or expose full trade IDs; rely on masked IDs and display fields.
+2. Do not request or expose full trade IDs; rely on masked IDs and display fields.
 
 For account and withdraw:
 
-1. Call `get_account_summary` for balance and commission context.
-2. Call `get_withdraw_config` before discussing a withdraw application.
-3. Confirm amount or all-withdrawable amount, limits, fees, and that the request only submits an application.
-4. Call `apply_withdraw` with either `amount` or `withdraw_all=1`.
-5. Use `get_withdraw_records` to show application status after submission.
+1. Call `get_current_member` for `commission`, points, growth value, member level, and order context.
+2. Confirm amount or all-withdrawable amount and that the request only submits an application.
+3. Call `apply_withdraw` with either `amount` or `withdraw_all=1`.
+4. Use `get_withdraw_records` to show application status after submission.
 
 ## Error Handling
 

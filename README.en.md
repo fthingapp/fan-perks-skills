@@ -8,7 +8,7 @@ Current skill:
 
 | Skill | Description |
 | --- | --- |
-| `fan-perks-open-api` | Search deals, convert rebate links, read member CPS orders, read commission/account summaries, read withdraw config, submit withdraw applications, and list withdraw records. |
+| `fan-perks-open-api` | Search deals, convert rebate links, read member CPS orders, read member commission/points/level data, submit withdraw applications, and list withdraw records. |
 
 ## Requirements
 

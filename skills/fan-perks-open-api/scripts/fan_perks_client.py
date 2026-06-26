@@ -15,6 +15,13 @@ import sys
 from urllib import error, parse, request
 
 API_BASE_URL = "https://perks.fthing.cn/api"
+PLATFORMS = ("tb", "jd")
+SEARCH_TYPES = (
+    "quanwang", "all", "dongdongqiang", "xiaoshi", "quantian", "shishi", "videos", "yongjin",
+    "pengyouquan", "price9", "price19", "high_commission", "today", "tmall",
+    "gold_seller", "taoqiangou", "juhuasuan", "haitao", "jiyoujia", "tmall_market",
+    "jd_self", "jd_good_shop", "jd_pingou", "jd_delivery", "jd_haitao", "jingxi", "jd_market",
+)
 
 
 def call(api_key, method, path, data=None):
@@ -44,16 +51,19 @@ def main():
     parser.add_argument("tool", choices=[
         "search_deals",
         "convert_product_link",
+        "get_current_member",
         "get_orders",
-        "get_order_detail",
-        "get_account_summary",
-        "get_withdraw_config",
         "get_withdraw_records",
         "apply_withdraw",
     ])
     parser.add_argument("--api-key", default=os.getenv("FAN_PERKS_API_KEY", ""), help="Member API key or FAN_PERKS_API_KEY")
     parser.add_argument("--keyword", default="", help="Product URL or search keyword")
-    parser.add_argument("--id", type=int, default=0, help="Order ID returned by get_orders")
+    parser.add_argument("--platform", choices=PLATFORMS, default="", help="Goods search platform: tb or jd")
+    parser.add_argument("--search-type", choices=SEARCH_TYPES, default="", help="Goods search type")
+    parser.add_argument("--sort", default="", help="Goods search sort option")
+    parser.add_argument("--cid", default="", help="Goods category ID")
+    parser.add_argument("--price", default="", help="Goods price filter")
+    parser.add_argument("--page-size", type=int, default=20, help="Goods search page size, maximum 50")
     parser.add_argument("--amount", default="", help="Withdraw amount, for example 10.00")
     parser.add_argument("--withdraw-all", action="store_true", help="Apply to withdraw all currently withdrawable commission")
     parser.add_argument("--page", type=int, default=1)
@@ -72,14 +82,22 @@ def main():
 
     if args.tool in ("search_deals", "convert_product_link"):
         require_value(parser, args.keyword, "--keyword", args.tool)
-    if args.tool == "get_order_detail":
-        require_value(parser, args.id, "--id", args.tool)
     if args.tool == "apply_withdraw" and not args.withdraw_all:
         require_value(parser, args.amount, "--amount", args.tool)
 
     mapping = {
-        "search_deals": ("GET", "/goods/search", {"keyword": args.keyword}),
+        "search_deals": ("GET", "/goods/search", {
+            "keyword": args.keyword,
+            "platform": args.platform,
+            "search_type": args.search_type,
+            "sort": args.sort,
+            "cid": args.cid,
+            "price": args.price,
+            "page": args.page,
+            "page_size": args.page_size,
+        }),
         "convert_product_link": ("POST", "/goods/convert", {"keyword": args.keyword}),
+        "get_current_member": ("GET", "/me", {}),
         "get_orders": ("GET", "/orders", {
             "page": args.page,
             "limit": args.limit,
@@ -90,9 +108,6 @@ def main():
             "start_time": args.start_time,
             "end_time": args.end_time,
         }),
-        "get_order_detail": ("GET", f"/orders/{args.id}", {}),
-        "get_account_summary": ("GET", "/account/summary", {}),
-        "get_withdraw_config": ("GET", "/withdraw/config", {}),
         "get_withdraw_records": ("GET", "/withdraw/list", {
             "page": args.page,
             "limit": args.limit,

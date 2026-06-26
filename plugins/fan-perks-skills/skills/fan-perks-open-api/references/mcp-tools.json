@@ -45,12 +45,51 @@
       "path": "/goods/search",
       "scope": "goods:read",
       "quota": "300/day",
-      "description": "Search available product deals by keyword or product URL.",
+      "description": "Search available product deals by keyword or product URL. Always returns converted deal URLs and supports platform, search_type, sort, cid, price, page, and page_size filters.",
       "input_schema": {
         "type": "object",
         "required": ["keyword"],
         "properties": {
-          "keyword": { "type": "string", "description": "Product URL or search keyword." }
+          "keyword": { "type": "string", "description": "Product URL or search keyword." },
+          "platform": { "type": "string", "enum": ["tb", "jd"], "description": "Optional platform. tb=淘宝, jd=京东." },
+          "search_type": {
+            "type": "string",
+            "enum": [
+              "quanwang",
+              "all",
+              "dongdongqiang",
+              "xiaoshi",
+              "quantian",
+              "shishi",
+              "videos",
+              "yongjin",
+              "pengyouquan",
+              "price9",
+              "price19",
+              "high_commission",
+              "today",
+              "tmall",
+              "gold_seller",
+              "taoqiangou",
+              "juhuasuan",
+              "haitao",
+              "jiyoujia",
+              "tmall_market",
+              "jd_self",
+              "jd_good_shop",
+              "jd_pingou",
+              "jd_delivery",
+              "jd_haitao",
+              "jingxi",
+              "jd_market"
+            ],
+            "description": "Optional search channel. Common: quanwang=全网搜索, all=全站领券, dongdongqiang=咚咚抢, xiaoshi=实时销量榜, quantian=全天销量榜, shishi=实时人气榜, videos=视频抖货, yongjin=红包排行, pengyouquan=朋友圈火爆, price9=9.9元, price19=19.9元, high_commission=超高红包, today=今日上新, tmall=天猫. TB only: gold_seller=金牌卖家, taoqiangou=淘抢购, juhuasuan=聚划算, haitao=天猫国际, jiyoujia=极有家, tmall_market=天猫超市. JD only: jd_self=京东自营, jd_good_shop=京东好店, jd_pingou=京东拼购, jd_delivery=京东配送, jd_haitao=京东国际, jingxi=京喜, jd_market=京东超市."
+          },
+          "sort": { "type": "string", "description": "Sort option, matching the admin TKCPS goods search option." },
+          "cid": { "type": "string", "description": "Category ID filter." },
+          "price": { "type": "string", "description": "Price filter." },
+          "page": { "type": "integer", "default": 1 },
+          "page_size": { "type": "integer", "default": 20, "maximum": 50 }
         }
       }
     },
@@ -67,6 +106,18 @@
         "properties": {
           "keyword": { "type": "string", "description": "Product URL or keyword to convert." }
         }
+      }
+    },
+    {
+      "name": "get_current_member",
+      "method": "GET",
+      "path": "/me",
+      "scope": "account:read",
+      "quota": "100/day",
+      "description": "Get authenticated member profile, commission amount, points, growth value, member level, and order statistics.",
+      "input_schema": {
+        "type": "object",
+        "properties": {}
       }
     },
     {
@@ -88,45 +139,6 @@
           "start_time": { "type": "string", "description": "Y-m-d" },
           "end_time": { "type": "string", "description": "Y-m-d" }
         }
-      }
-    },
-    {
-      "name": "get_order_detail",
-      "method": "GET",
-      "path": "/orders/{id}",
-      "scope": "order:read",
-      "quota": "100/day",
-      "description": "Get one authenticated member CPS order detail. Use an id returned by get_orders.",
-      "input_schema": {
-        "type": "object",
-        "required": ["id"],
-        "properties": {
-          "id": { "type": "integer" }
-        }
-      }
-    },
-    {
-      "name": "get_account_summary",
-      "method": "GET",
-      "path": "/account/summary",
-      "scope": "account:read",
-      "quota": "100/day",
-      "description": "Get commission account, order statistics, and member level summary.",
-      "input_schema": {
-        "type": "object",
-        "properties": {}
-      }
-    },
-    {
-      "name": "get_withdraw_config",
-      "method": "GET",
-      "path": "/withdraw/config",
-      "scope": "withdraw:read",
-      "quota": "100/day",
-      "description": "Get withdraw configuration, balance, methods, business limits, and Open API withdraw limits.",
-      "input_schema": {
-        "type": "object",
-        "properties": {}
       }
     },
     {
@@ -154,8 +166,8 @@
       "quota": "3/day",
       "description": "Submit a withdraw application only. Requires user confirmation. One member can have only one in-progress withdraw application.",
       "preconditions": [
-        "Call get_withdraw_config first.",
-        "Confirm amount or all-withdrawable amount, balance, fee, minimum amount, business single limit, OpenAPI single limit, daily count, and daily amount.",
+        "Call get_current_member first and inspect account.commission for currently available commission.",
+        "Confirm amount or all-withdrawable commission with the user.",
         "Check withdraw records when needed; do not submit a second application while one is pending audit, pending transfer, or transferring.",
         "Explain that this API submits an application and does not approve or transfer funds."
       ],
