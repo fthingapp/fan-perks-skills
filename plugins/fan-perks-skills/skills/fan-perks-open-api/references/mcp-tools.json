@@ -281,7 +281,7 @@
       "path": "/orders",
       "scope": "order:read",
       "quota": "100/day",
-      "description": "List authenticated member CPS orders.",
+      "description": "List authenticated member CPS orders. reward_stage=waiting_taobao_auth requires personal Taobao authorization in member center before payout; existing valid orders retain their settlement conditions.",
       "input_schema": {
         "type": "object",
         "properties": {
