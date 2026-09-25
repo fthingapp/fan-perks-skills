@@ -57,8 +57,9 @@ def main():
         "apply_withdraw",
     ])
     parser.add_argument("--api-key", default=os.getenv("FAN_PERKS_API_KEY", ""), help="Member API key or FAN_PERKS_API_KEY")
+    parser.add_argument("--product-ref", default="", help="Opaque search-result reference for conversion")
     parser.add_argument("--keyword", default="", help="Product URL or search keyword")
-    parser.add_argument("--platform", choices=PLATFORMS, default="", help="Goods search platform: tb or jd")
+    parser.add_argument("--platform", choices=PLATFORMS, default="", help="Product platform for search or ambiguous conversion: tb or jd")
     parser.add_argument("--search-type", choices=SEARCH_TYPES, default="", help="Goods search type")
     parser.add_argument("--sort", default="", help="Goods search sort option")
     parser.add_argument("--cid", default="", help="Goods category ID")
@@ -80,7 +81,7 @@ def main():
     if not args.api_key:
         parser.error("--api-key/FAN_PERKS_API_KEY is required")
 
-    if args.tool in ("search_deals", "convert_product_link"):
+    if args.tool == "search_deals" or (args.tool == "convert_product_link" and not args.product_ref):
         require_value(parser, args.keyword, "--keyword", args.tool)
     if args.tool == "apply_withdraw" and not args.withdraw_all:
         require_value(parser, args.amount, "--amount", args.tool)
@@ -96,7 +97,7 @@ def main():
             "page": args.page,
             "page_size": args.page_size,
         }),
-        "convert_product_link": ("POST", "/goods/convert", {"keyword": args.keyword}),
+        "convert_product_link": ("POST", "/goods/convert", {"keyword": args.keyword, "platform": args.platform, "product_ref": args.product_ref}),
         "get_current_member": ("GET", "/me", {}),
         "get_orders": ("GET", "/orders", {
             "page": args.page,

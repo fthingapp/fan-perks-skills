@@ -1,6 +1,6 @@
 {
   "name": "fan-perks-tkcps",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "site_url": "https://perks.fthing.cn",
   "api_base_url": "https://perks.fthing.cn/api",
   "base_url": "/api/open/tkcps/v1",
@@ -29,14 +29,111 @@
     ]
   },
   "errors": [
-    { "code": "OPEN_API_DISABLED", "http": 200, "description": "Platform Open API switch is disabled." },
-    { "code": "ENDPOINT_DISABLED", "http": 200, "description": "The requested endpoint is disabled." },
-    { "code": "API_KEY_REQUIRED", "http": 200, "description": "Authorization Bearer or X-API-Key is missing." },
-    { "code": "INVALID_API_KEY", "http": 200, "description": "The API key is invalid, disabled, or reset." },
-    { "code": "SCOPE_DENIED", "http": 200, "description": "The API key does not have the required scope." },
-    { "code": "WITHDRAW_APPLY_DISABLED", "http": 200, "description": "Withdraw application is not enabled for this key." },
-    { "code": "RATE_LIMITED", "http": 429, "description": "Daily endpoint quota has been reached." },
-    { "code": "SERVER_ERROR", "http": 200, "description": "Server-side error." }
+    {
+      "code": "OPEN_API_DISABLED",
+      "http": 200,
+      "description": "Platform Open API switch is disabled."
+    },
+    {
+      "code": "ENDPOINT_DISABLED",
+      "http": 200,
+      "description": "The requested endpoint is disabled."
+    },
+    {
+      "code": "API_KEY_REQUIRED",
+      "http": 200,
+      "description": "Authorization Bearer or X-API-Key is missing."
+    },
+    {
+      "code": "INVALID_API_KEY",
+      "http": 200,
+      "description": "The API key is invalid, disabled, or reset."
+    },
+    {
+      "code": "SCOPE_DENIED",
+      "http": 200,
+      "description": "The API key does not have the required scope."
+    },
+    {
+      "code": "WITHDRAW_APPLY_DISABLED",
+      "http": 200,
+      "description": "Withdraw application is not enabled for this key."
+    },
+    {
+      "code": "RATE_LIMITED",
+      "http": 429,
+      "description": "Daily endpoint quota has been reached."
+    },
+    {
+      "code": "SERVER_ERROR",
+      "http": 200,
+      "description": "Server-side error."
+    },
+    {
+      "code": "INPUT_INVALID",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "MULTIPLE_PRODUCTS",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "SEARCH_REQUIRED",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "PLATFORM_REQUIRED",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "PLATFORM_CONFLICT",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "PLATFORM_UNAVAILABLE",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "PRODUCT_EXPIRED",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "PRODUCT_INVALID",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "CONVERT_PROCESSING",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "CONVERT_FAILED",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "SERVICE_BUSY",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "ATTRIBUTION_CHANGED",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    },
+    {
+      "code": "ATTRIBUTION_UNAVAILABLE",
+      "http": 200,
+      "description": "Correct the input or refresh the product as indicated by msg. Do not automatically retry conversion."
+    }
   ],
   "tools": [
     {
@@ -45,13 +142,25 @@
       "path": "/goods/search",
       "scope": "goods:read",
       "quota": "300/day",
-      "description": "Search available product deals by keyword or product URL. Always returns converted deal URLs and supports platform, search_type, sort, cid, price, page, and page_size filters.",
+      "description": "Search product data and estimated member rewards. Returns product_ref, never promotion links or commands. Select a product before calling convert_product_link.",
       "input_schema": {
         "type": "object",
-        "required": ["keyword"],
+        "required": [
+          "keyword"
+        ],
         "properties": {
-          "keyword": { "type": "string", "description": "Product URL or search keyword." },
-          "platform": { "type": "string", "enum": ["tb", "jd"], "description": "Optional platform. tb=淘宝, jd=京东." },
+          "keyword": {
+            "type": "string",
+            "description": "Product URL or search keyword."
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "tb",
+              "jd"
+            ],
+            "description": "Optional platform. tb=淘宝, jd=京东."
+          },
           "search_type": {
             "type": "string",
             "enum": [
@@ -85,11 +194,27 @@
             ],
             "description": "Optional search channel. Common: quanwang=全网搜索, all=全站领券, dongdongqiang=咚咚抢, xiaoshi=实时销量榜, quantian=全天销量榜, shishi=实时人气榜, videos=视频抖货, yongjin=红包排行, pengyouquan=朋友圈火爆, price9=9.9元, price19=19.9元, high_commission=超高红包, today=今日上新, tmall=天猫. TB only: gold_seller=金牌卖家, taoqiangou=淘抢购, juhuasuan=聚划算, haitao=天猫国际, jiyoujia=极有家, tmall_market=天猫超市. JD only: jd_self=京东自营, jd_good_shop=京东好店, jd_pingou=京东拼购, jd_delivery=京东配送, jd_haitao=京东国际, jingxi=京喜, jd_market=京东超市."
           },
-          "sort": { "type": "string", "description": "Sort option, matching the admin TKCPS goods search option." },
-          "cid": { "type": "string", "description": "Category ID filter." },
-          "price": { "type": "string", "description": "Price filter." },
-          "page": { "type": "integer", "default": 1 },
-          "page_size": { "type": "integer", "default": 20, "maximum": 50 }
+          "sort": {
+            "type": "string",
+            "description": "Sort option, matching the admin TKCPS goods search option."
+          },
+          "cid": {
+            "type": "string",
+            "description": "Category ID filter."
+          },
+          "price": {
+            "type": "string",
+            "description": "Price filter."
+          },
+          "page": {
+            "type": "integer",
+            "default": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "default": 20,
+            "maximum": 50
+          }
         }
       }
     },
@@ -99,12 +224,38 @@
       "path": "/goods/convert",
       "scope": "goods:convert",
       "quota": "100/day",
-      "description": "Convert a product URL or keyword into current-member commission links.",
+      "description": "Generate current-member promotion links for one selected product. Accept product_ref or keyword plus platform; valid results are reused for 10 minutes.",
       "input_schema": {
         "type": "object",
-        "required": ["keyword"],
+        "anyOf": [
+          {
+            "required": [
+              "product_ref"
+            ]
+          },
+          {
+            "required": [
+              "keyword"
+            ]
+          }
+        ],
         "properties": {
-          "keyword": { "type": "string", "description": "Product URL or keyword to convert." }
+          "product_ref": {
+            "type": "string",
+            "description": "Opaque product reference from search; valid for 24 hours."
+          },
+          "keyword": {
+            "type": "string",
+            "description": "One product URL, command or product ID. Product names must use search_deals."
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "tb",
+              "jd"
+            ],
+            "description": "Required when platform cannot be identified from the input."
+          }
         }
       }
     },
@@ -130,14 +281,35 @@
       "input_schema": {
         "type": "object",
         "properties": {
-          "page": { "type": "integer", "default": 1 },
-          "limit": { "type": "integer", "default": 10, "maximum": 50 },
-          "keyword": { "type": "string" },
-          "tk_status": { "type": "integer" },
-          "commission_settled": { "type": "integer" },
-          "commission_status": { "type": "integer" },
-          "start_time": { "type": "string", "description": "Y-m-d" },
-          "end_time": { "type": "string", "description": "Y-m-d" }
+          "page": {
+            "type": "integer",
+            "default": 1
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "maximum": 50
+          },
+          "keyword": {
+            "type": "string"
+          },
+          "tk_status": {
+            "type": "integer"
+          },
+          "commission_settled": {
+            "type": "integer"
+          },
+          "commission_status": {
+            "type": "integer"
+          },
+          "start_time": {
+            "type": "string",
+            "description": "Y-m-d"
+          },
+          "end_time": {
+            "type": "string",
+            "description": "Y-m-d"
+          }
         }
       }
     },
@@ -151,10 +323,23 @@
       "input_schema": {
         "type": "object",
         "properties": {
-          "page": { "type": "integer", "default": 1 },
-          "limit": { "type": "integer", "default": 10, "maximum": 50 },
-          "status": { "type": "integer", "description": "0 pending audit, 1 pending transfer, 2 rejected, 3 paid, 4 canceled." },
-          "withdraw_type": { "type": "string", "description": "Withdraw method, for example wechat." }
+          "page": {
+            "type": "integer",
+            "default": 1
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "maximum": 50
+          },
+          "status": {
+            "type": "integer",
+            "description": "0 pending audit, 1 pending transfer, 2 rejected, 3 paid, 4 canceled."
+          },
+          "withdraw_type": {
+            "type": "string",
+            "description": "Withdraw method, for example wechat."
+          }
         }
       }
     },
@@ -174,8 +359,18 @@
       "input_schema": {
         "type": "object",
         "properties": {
-          "amount": { "type": "string", "description": "Withdraw amount in yuan, for example 10.00. Required unless withdraw_all is 1." },
-          "withdraw_all": { "type": "integer", "enum": [0, 1], "description": "Set to 1 to withdraw all currently withdrawable commission." }
+          "amount": {
+            "type": "string",
+            "description": "Withdraw amount in yuan, for example 10.00. Required unless withdraw_all is 1."
+          },
+          "withdraw_all": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Set to 1 to withdraw all currently withdrawable commission."
+          }
         }
       }
     }

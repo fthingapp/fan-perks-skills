@@ -50,8 +50,8 @@ Except for `RATE_LIMITED`, which may return HTTP 429, business failures usually 
 | Method | Path | Scope | Default | Quota | Purpose |
 | --- | --- | --- | --- | --- | --- |
 | GET | `/me` | `account:read` | on | 100/day | Current member profile, `commission`, points, growth value, member level, order stats, and API key validation |
-| GET | `/goods/search` | `goods:read` | on | 300/day | Search product deals by keyword or URL; returns converted deal URLs by default |
-| POST | `/goods/convert` | `goods:convert` | on | 100/day | Convert product link or keyword into rebate links |
+| GET | `/goods/search` | `goods:read` | on | 300/day | Search product deals by keyword or URL; returns product references and estimated member rewards, without promotion links |
+| POST | `/goods/convert` | `goods:convert` | on | 100/day | Generate a selected product deal link using product_ref or keyword + platform |
 | GET | `/orders` | `order:read` | on | 100/day | Member CPS order list |
 | GET | `/withdraw/list` | `withdraw:read` | on | 100/day | Withdraw records |
 | POST | `/withdraw/apply` | `withdraw:apply` | off | 3/day | Submit withdraw application |
@@ -60,8 +60,8 @@ Except for `RATE_LIMITED`, which may return HTTP 429, business failures usually 
 
 | Scope | Covers | Notes |
 | --- | --- | --- |
-| `goods:read` | `/goods/search` | Query only. Supports `keyword`, `platform`, `search_type`, `sort`, `cid`, `price`, `page`, and `page_size`; converted deal URLs are always returned. |
-| `goods:convert` | `/goods/convert` | Generates current-member rebate links. |
+| `goods:read` | `/goods/search` | Query only. Supports `keyword`, `platform`, `search_type`, `sort`, `cid`, `price`, `page`, and `page_size`; product_ref and member_commission_status are returned; promotion URLs are not returned. |
+| `goods:convert` | `/goods/convert` | Generates current-member deal links; requires product_ref or one keyword input, and platform when ambiguous. Results are reused for ten minutes. |
 | `account:read` | `/me` | Member identity, commission account summary, points, growth value, and member level. |
 | `order:read` | `/orders` | Current member orders only; trade IDs are masked. |
 | `withdraw:read` | `/withdraw/list` | Read-only withdraw records. |
@@ -78,7 +78,7 @@ The MCP descriptor exposes 6 tools:
 - `get_withdraw_records`
 - `apply_withdraw`
 
-For shopping workflows, call `convert_product_link` first with the user's product URL or keyword, then call `search_deals` with the same input for recommendations.
+For shopping workflows, call `search_deals`, let the user select a product, then call `convert_product_link` with its `product_ref` when they want to buy, copy, or share. An explicit request to convert a single URL or command may call conversion directly. Do not convert recommendations before the user selects one.
 
 ## Goods Search Parameters
 
@@ -156,3 +156,9 @@ curl -X POST "https://perks.fthing.cn/api/open/tkcps/v1/withdraw/apply" \
   -H "Authorization: Bearer $FAN_PERKS_API_KEY" \
   -d "withdraw_all=1"
 ```
+
+## Product query and conversion contract
+
+Search responses contain `product_ref` (24-hour reference) and `member_commission_status=estimated|unknown`. Unknown amounts are omitted; a known zero amount is `0.00`. Search never returns `goods_url`, `goods_short_url`, or `tkl`.
+
+Call `POST /api/open/tkcps/v1/goods/convert` only for a selected product, using `{ "product_ref": "<reference from search>" }`, or `{ "keyword": "<one product URL or command>", "platform": "jd" }`. Product names use search. Conversion returns `expires_at` as the service reuse deadline, not a guarantee of URL validity. Do not retry or generate alternative-platform links automatically.

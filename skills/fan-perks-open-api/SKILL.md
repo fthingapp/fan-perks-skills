@@ -12,7 +12,7 @@ Fixed API base: `https://perks.fthing.cn/api`.
 ## Trigger Scenarios
 
 - The user wants to search product deals, coupons, or CPS commission opportunities.
-- The user wants to convert a product URL or keyword into a Fan Perks rebate link.
+- The user wants to convert one selected product or product URL into a Fan Perks deal link.
 - The user asks about their CPS orders, commission status, red packet commission, points, growth value, or member level.
 - The user wants to check current commission before withdrawing, submit a withdraw application, or list withdraw records.
 - The user is configuring OpenAPI, MCP, OpenClaw, Hermes, Dify, LangChain, or a custom agent around Fan Perks.
@@ -23,7 +23,9 @@ Fixed API base: `https://perks.fthing.cn/api`.
 
 Optional inputs depend on the operation:
 
-- `keyword`: product URL or keyword for deal search and product conversion.
+- `keyword`: search keywords for search; one URL, command or product ID for conversion.
+- `product_ref`: opaque search-result reference, valid for 24 hours. Prefer this for conversion.
+- `platform`: `tb` or `jd`; required when a conversion input does not identify its platform.
 - `amount`: withdraw amount, in yuan, for `apply_withdraw`.
 - `withdraw_all`: set to `1` to apply for all currently withdrawable commission instead of passing `amount`.
 - `page`, `limit`, `status`: list filters for orders or withdraw records.
@@ -63,7 +65,7 @@ Prefer these MCP-style operations:
 | `get_withdraw_records` | GET | `/api/open/tkcps/v1/withdraw/list` | `withdraw:read` |
 | `apply_withdraw` | POST | `/api/open/tkcps/v1/withdraw/apply` | `withdraw:apply` |
 
-`GET /goods/search` accepts `keyword`, `platform`, `search_type`, `sort`, `cid`, `price`, `page`, and `page_size`. It always returns converted deal URLs.
+`GET /goods/search` accepts `keyword`, `platform`, `search_type`, `sort`, `cid`, `price`, `page`, and `page_size`. It returns product data, `product_ref`, and `member_commission_status` (`estimated` or `unknown`), without promotion URLs or commands. When unknown, the amount is omitted. Calculate and display only the member-visible reward supplied by the server.
 
 Supported `platform` values:
 
@@ -80,10 +82,11 @@ Supported `search_type` values:
 
 For shopping:
 
-1. When the user gives a product URL or keyword, call `convert_product_link` first to get the primary rebate link.
-2. Then call `search_deals` with the same input to provide recommended alternatives or similar deals.
-3. Explain the relevant converted link, coupon, and estimated member commission fields.
-4. Mention that commission is estimated until the CPS order settles.
+1. For product names or browsing, call `search_deals`; show product information and estimated member rewards.
+2. Once a product is selected and the user wants its deal link, call `convert_product_link` with `product_ref`. Never convert every search result.
+3. A user explicitly requesting conversion of a URL or command can call `convert_product_link` directly. Ask for the platform if it cannot be identified.
+4. `expires_at` is the service reuse deadline, normally ten minutes, not the platform URL lifetime. Re-query after expiry. A reward remains estimated until order settlement.
+5. On `PRODUCT_EXPIRED`, refresh search results. On `CONVERT_PROCESSING`, `CONVERT_FAILED`, or `SERVICE_BUSY`, report the state without automatic retries. On `SEARCH_REQUIRED`, use search instead.
 
 For orders:
 
