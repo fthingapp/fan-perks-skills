@@ -162,3 +162,5 @@ curl -X POST "https://perks.fthing.cn/api/open/tkcps/v1/withdraw/apply" \
 Search responses contain `product_ref` (24-hour reference) and `member_commission_status=estimated|unknown`. Unknown amounts are omitted; a known zero amount is `0.00`. Search never returns `goods_url`, `goods_short_url`, or `tkl`.
 
 Call `POST /api/open/tkcps/v1/goods/convert` only for a selected product, using `{ "product_ref": "<reference from search>" }`, or `{ "keyword": "<one product URL or command>", "platform": "jd" }`. Product names use search. Conversion returns `expires_at` as the service reuse deadline, not a guarantee of URL validity. Do not retry or generate alternative-platform links automatically.
+
+Local-life activity venues (`eleme` / `meituan`) return `item_type=venue`. Generate their activity links only on an explicit open/share action, reusing the same member cache. They omit single-product prices and member reward amounts; do not promise Fan Perks order tracking, settlement, or cashback for these venues. Regular goods use `item_type=product`. Venue browsing needs no conversion or commission lookup.

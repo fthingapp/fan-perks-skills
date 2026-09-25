@@ -157,9 +157,11 @@
             "type": "string",
             "enum": [
               "tb",
-              "jd"
+              "jd",
+              "eleme",
+              "meituan"
             ],
-            "description": "Optional platform. tb=淘宝, jd=京东."
+            "description": "Optional platform: tb, jd, eleme, meituan. Venues do not promise order rewards."
           },
           "search_type": {
             "type": "string",
@@ -252,7 +254,9 @@
             "type": "string",
             "enum": [
               "tb",
-              "jd"
+              "jd",
+              "eleme",
+              "meituan"
             ],
             "description": "Required when platform cannot be identified from the input."
           }

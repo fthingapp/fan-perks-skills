@@ -25,7 +25,7 @@ Optional inputs depend on the operation:
 
 - `keyword`: search keywords for search; one URL, command or product ID for conversion.
 - `product_ref`: opaque search-result reference, valid for 24 hours. Prefer this for conversion.
-- `platform`: `tb` or `jd`; required when a conversion input does not identify its platform.
+- `platform`: `tb`, `jd`, `eleme`, or `meituan`; required when a conversion input does not identify its platform.
 - `amount`: withdraw amount, in yuan, for `apply_withdraw`.
 - `withdraw_all`: set to `1` to apply for all currently withdrawable commission instead of passing `amount`.
 - `page`, `limit`, `status`: list filters for orders or withdraw records.
@@ -129,3 +129,5 @@ Except `RATE_LIMITED`, which may return HTTP 429, business errors usually return
 - Read `references/mcp-tools.json` when building OpenClaw, Hermes, or MCP tool adapters.
 - Read `references/openapi-summary.md` when you need endpoint details, scopes, withdraw rules, and examples.
 - Use `scripts/fan_perks_client.py` for quick manual calls from a shell. It uses only the Python standard library, calls `https://perks.fthing.cn/api`, and reads `FAN_PERKS_API_KEY`.
+
+Local-life activity venues (`eleme` / `meituan`) return `item_type=venue`. Generate their activity links only on an explicit open/share action, reusing the same member cache. They omit single-product prices and member reward amounts; do not promise Fan Perks order tracking, settlement, or cashback for these venues. Regular goods use `item_type=product`. Venue browsing needs no conversion or commission lookup.

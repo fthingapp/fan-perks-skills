@@ -15,7 +15,7 @@ import sys
 from urllib import error, parse, request
 
 API_BASE_URL = "https://perks.fthing.cn/api"
-PLATFORMS = ("tb", "jd")
+PLATFORMS = ("tb", "jd", "eleme", "meituan")
 SEARCH_TYPES = (
     "quanwang", "all", "dongdongqiang", "xiaoshi", "quantian", "shishi", "videos", "yongjin",
     "pengyouquan", "price9", "price19", "high_commission", "today", "tmall",
@@ -59,7 +59,7 @@ def main():
     parser.add_argument("--api-key", default=os.getenv("FAN_PERKS_API_KEY", ""), help="Member API key or FAN_PERKS_API_KEY")
     parser.add_argument("--product-ref", default="", help="Opaque search-result reference for conversion")
     parser.add_argument("--keyword", default="", help="Product URL or search keyword")
-    parser.add_argument("--platform", choices=PLATFORMS, default="", help="Product platform for search or ambiguous conversion: tb or jd")
+    parser.add_argument("--platform", choices=PLATFORMS, default="", help="Product platform for search or ambiguous conversion: tb, jd, eleme or meituan")
     parser.add_argument("--search-type", choices=SEARCH_TYPES, default="", help="Goods search type")
     parser.add_argument("--sort", default="", help="Goods search sort option")
     parser.add_argument("--cid", default="", help="Goods category ID")
